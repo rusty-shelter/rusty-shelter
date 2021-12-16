@@ -1,0 +1,65 @@
+on:
+  workflow_run:
+    workflows: ["Lints"]
+    types: 
+      - completed
+
+name: Tests
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - 1.66.0 # MSRV
+        os: 
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+      
+      - name: Test debug-mode, default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+      - name: Test release-mode, default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --release
+
+  sanitizers:
+    name:  Tests w. sanitizers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: x86_64-unknown-linux-gnu
+          override: true
+      
+      # Release (LeakSanitizer is enabled by default with AddressSanitizer for x86_64 Linux builds)
+      # https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer
+      - run: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS="detect_odr_violation=0" cargo test --all-features --tests --release --target x86_64-unknown-linux-gnu
+      - run: RUSTFLAGS="-Z sanitizer=address" ASAN_OPTIONS="detect_odr_violation=0" cargo test --no-default-features --tests --release --target x86_64-unknown-linux-gnu
