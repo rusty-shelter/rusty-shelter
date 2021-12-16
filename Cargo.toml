@@ -1,0 +1,12 @@
+[workspace]
+members = [
+    # main crates, published on crates.io
+    "fast-cdc",
+    "shelter-storage",
+    "shelter-block",
+    "shelter-fs",
+    "shelter-cli",
+]
+default-members = [
+    "shelter-fs",
+]
