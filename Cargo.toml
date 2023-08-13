@@ -6,7 +6,16 @@ members = [
     "shelter-block",
     "shelter-fs",
     "shelter-cli",
+    "console",
+    "console-dioxus",
 ]
 default-members = [
     "shelter-fs",
 ]
+
+[profile.release]
+lto = true
+panic = "abort"
+opt-level = 'z'
+strip = true
+codegen-units = 1

@@ -1,0 +1,4 @@
+# Tunk config file, see:
+# https://github.com/thedodd/trunk/blob/master/Trunk.toml
+[tools]
+tailwindcss = "3.3.3"

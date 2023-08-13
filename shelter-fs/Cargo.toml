@@ -10,6 +10,9 @@ rust-version = "1.66" # Update CI test along with this.
 repository = "https://github.com/rusty-shelter/rusty-shelter"
 license = "MPL-2.0"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 thiserror = "1.0"
 # machine-uid = "0.4"
